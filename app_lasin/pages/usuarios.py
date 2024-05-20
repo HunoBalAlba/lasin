@@ -1,11 +1,11 @@
 from app_lasin.templates import template
-
+from .user_page import user_page,UserState
 
 import reflex as rx
 
 
 
-@template(route="/usuarios", title="usuarios")
+@template(route="/usuarios", title="usuarios",on_load=UserState.get_all_user)
 def usuarios() -> rx.Component:
     """The dashboard page.
 
@@ -22,8 +22,9 @@ def usuarios() -> rx.Component:
 
           #rx.code(),
           #rx.code("app_lasin/pages/user_page.py"),
-    
+        
         ),
+        user_page()
         
     )
 
