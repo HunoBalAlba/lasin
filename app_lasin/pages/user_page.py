@@ -14,7 +14,7 @@ class UserState(rx.State):
     @rx.background
     async def get_all_user(self):
         async with self:
-            print("***********************         user page             **************")
+            #print("***********************         user page             **************")
             self.users=select_all_user_service()
     
     @rx.background
