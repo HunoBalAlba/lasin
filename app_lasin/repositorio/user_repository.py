@@ -21,10 +21,29 @@ def select_user_by_email(email:str):
           query=select(User).where(User.username==email)
           # select * from 
           return session.exec(query).all()
+     
+def create_user(user:User):
+    engine=connect()
+    with Session(engine) as session:
+        session.add(user)
+        session.commit()
+        query=select(User)
+        # select * from 
+        return session.exec(query).all()
+
+def delete_user(email:str):
+    engine=connect()
+    with Session(engine) as session:
+        query=select(User).where(User.username==email)
+        user_delete=session.exec(query).one()
+        session.delete(user_delete)
+        session.commit()
+        query=select(User)
+        return session.exec(query).all()
 
 
 def select_all_111():
-    print("***********************         user ....   repository        **************")
+    #print("***********************         user ....   repository        **************")
     config = load_config()
     try:
             # connecting to the PostgreSQL server

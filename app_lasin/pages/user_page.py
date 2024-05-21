@@ -1,11 +1,15 @@
 
 import reflex as rx
 from ..modelo.user_model import User
-from ..servicio.user_service import select_all_user_service,select_user_by_email_service
+from ..servicio.user_service import select_all_user_service,select_user_by_email_service,create_user_service,delete_user_service
+
+from .notify import notify_component
+import asyncio
 
 class UserState(rx.State):
     users:list[User]
     user_buscar:str
+    error:str=''
 
     @rx.background
     async def get_all_user(self):
@@ -21,7 +25,26 @@ class UserState(rx.State):
     def buscar_on_change(self,value:str):
         self.user_buscar=value
 
+    
+    async def handlenotify(self):
+        async with self:
+            await asyncio.sleep(2)
+            self.error=''
 
+    @rx.background
+    async def create_user(self,data:dict):
+        async with self:
+            try:
+                self.users=create_user_service(username=data['username'],password=data['password'],phone=data['phone'],name=data['name'])
+            except BaseException as be:
+                print(be.args)
+                self.error=be.args
+        await self.handlenotify()
+
+    @rx.background
+    async def delete_user_by_email(self,email):
+        async with self:
+            self.users=delete_user_service(email)
 
 
 
@@ -31,11 +54,16 @@ def user_page()-> rx.Component:
         rx.heading('Usuariosss',align='center'),
         rx.hstack(
             buscar_user_component(),
+            create_user_dialogo_component(),
             justify='center',
             style={"width":"60vw","margin":"auto"}
         ),
 
         table_user(UserState.users),
+        rx.cond(
+            UserState.error!='',
+            notify_component(UserState.error,'shield-alert', 'yellow')
+        ),
         direction='column',
         style={"width":"60vw","margin":"auto"}
     )
@@ -63,7 +91,8 @@ def row_table(user:User):
         rx.table.cell(user.username),
         rx.table.cell(user.password),
         rx.table.cell(rx.hstack(
-            rx.button('eliminar')
+            #rx.button('eliminar')
+            delete_user_dialogo_component(user.username)
             #delete_user_dialogo_component(user.username),
             #rx.button(rx.icon('pencil'))
         ))
@@ -73,4 +102,82 @@ def buscar_user_component()->rx.Component:
     return rx.hstack(
         rx.input(placeholder='Ingrese Email',on_change=UserState.buscar_on_change),
         rx.button('Buscar usuario',on_click=UserState.get_user_by_email)
+    )
+
+
+
+def create_user_form() ->rx.Component:
+    return rx.form(
+        rx.vstack(
+            rx.input(
+                placeholder='Nombre',
+                name="name"
+            ),
+            rx.input(
+                placeholder='Email',
+                name="username"
+            ),
+            rx.input(
+                placeholder='Contraseña',
+                name="password",
+                type='password'
+            ),
+            rx.input(
+                placeholder='Telefono',
+                name="phone"
+            ),
+            rx.dialog.close(
+                rx.button('Guardar', type='submit')
+            ),
+
+        ),
+        on_submit=UserState.create_user,
+    )
+
+def create_user_dialogo_component()->rx.Component:
+    return rx.dialog.root(
+        rx.dialog.trigger(rx.button('Crear usuario')),
+        rx.dialog.content(
+            rx.flex(
+                rx.dialog.title('Crear usuarioooo'),
+                create_user_form(),
+                justify='center',
+                align='center',
+                direction='column',
+            ),
+            rx.flex(
+                rx.dialog.close(
+                    rx.button('cancelar',color_scheme='gray',variant='soft')
+                ),
+                spacing="3",
+                margin_top="16px",
+                justify="end",
+            ),
+            style={'width':'300px'}
+        ),
+    )
+
+def delete_user_dialogo_component(username:str)->rx.Component:
+    return rx.dialog.root(
+        rx.dialog.trigger(rx.button(rx.icon('trash-2'))),
+        rx.dialog.content(
+            rx.dialog.title('Eliminar Usuario'),
+            rx.dialog.description('está seguro de querer eliminar el usuario'+username),
+            rx.flex(
+                rx.dialog.close(
+                    rx.button(
+                        'Cancelar',
+                        color_scheme='gray',
+                        variant='soft'
+                    ),
+                ),
+                rx.dialog.close(
+                    rx.button('Confirmar',on_click=UserState.delete_user_by_email(username)),
+
+                ),
+                spacing="3",
+                margin_top="16px",
+                justify="end",
+            )
+        )
     )
