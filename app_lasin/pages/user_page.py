@@ -74,8 +74,8 @@ def table_user(list_user: list[User])->rx.Component:
         rx.table.header(
             rx.table.row(
                 rx.table.column_header_cell('nombre'),
-                rx.table.column_header_cell('nombre usua'),
-                rx.table.column_header_cell('password'),
+                rx.table.column_header_cell('nombre usuaario'),
+                rx.table.column_header_cell('Telefono'),
                 rx.table.column_header_cell('Accion')
             )
         ),
@@ -89,7 +89,7 @@ def row_table(user:User):
     return rx.table.row(
         rx.table.cell(user.name),
         rx.table.cell(user.username),
-        rx.table.cell(user.password),
+        rx.table.cell(user.phone),
         rx.table.cell(rx.hstack(
             #rx.button('eliminar')
             delete_user_dialogo_component(user.username)
