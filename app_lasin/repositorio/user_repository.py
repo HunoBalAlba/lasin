@@ -40,57 +40,5 @@ def delete_user(email:str):
         session.commit()
         query=select(User)
         return session.exec(query).all()
-
-
-def select_all_111():
-    #print("***********************         user ....   repository        **************")
-    config = load_config()
-    try:
-            # connecting to the PostgreSQL server
-        with psycopg2.connect(**config) as conn:
-            cursor = conn.cursor()
-                # Print PostgreSQL Connection properties
-                #print ( conn.get_dsn_parameters(),"\n")
-
-                # Print PostgreSQL version
-            cursor.execute("SELECT * FROM personas")
-            record = cursor.fetchall()
-            print("You are connected to - ", record,"\n")
-            return record
-                
-    except (psycopg2.DatabaseError, Exception) as error:
-            print(error)
-
-    '''
-    engine = connect(config)
-
-    #engine = create_engine(
-    "postgresql+pg8000://scott:tiger@localhost/test",
-    isolation_level = "REPEATABLE READ"
-)
     
-    with Session(engine) as session:
-        query=select(User)
-        return session.exec(query).all()
-    '''
     
-
-def seleccionar_todos_usuarios(config):
-    """ Connect to the PostgreSQL database server """
-    try:
-        # connecting to the PostgreSQL server
-        with psycopg2.connect(**config) as conn:
-            cursor = conn.cursor()
-            # Print PostgreSQL Connection properties
-            #print ( conn.get_dsn_parameters(),"\n")
-
-            # Print PostgreSQL version
-            cursor.execute("SELECT * FROM personas")
-            record = cursor.fetchall()
-            print("You are connected to - ", record,"\n")
-            return record
-            print('Connected to the PostgreSQL server.')
-            return conn
-    except (psycopg2.DatabaseError, Exception) as error:
-        print(error)
-
