@@ -1,8 +1,21 @@
+from app_lasin.templates import template
+#######
+
 import reflex as rx
 import requests as rq
 import re
 
+#from fastapi import FastAPI
 
+#app = FastAPI()
+
+'''
+@rx.get("/fast")
+async def root():
+    return {"message": "Hello World"}
+
+
+'''
 
 class LoginState(rx.State):
     loader: bool=False
@@ -47,8 +60,11 @@ class LoginState(rx.State):
 
 
 
-@rx.page(route="/login",title="login")
+#@rx.page(route="/login",title="login")
+#@template(route="/cert", title="Certificados")
+@template(route="/login",title="login")
 def login()->rx.Component:
+    #return rx.section(
     return rx.section(
         rx.flex(
             rx.image(src='/logo_i.png',width="300px",border_radius="15px,50px"),

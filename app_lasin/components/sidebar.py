@@ -20,6 +20,7 @@ def sidebar_header() -> rx.Component:
         rx.spacer(),
         rx.link(
             rx.button(
+                #rx.icon("messages-square"),
                 rx.icon("messages-square"),
                 color_scheme="gray",
                 variant="soft",
@@ -72,6 +73,7 @@ def sidebar_item(text: str, url: str) -> rx.Component:
     active = (rx.State.router.page.path == url.lower()) | (
         (rx.State.router.page.path == "/") & text == "Home"
     )
+    #print(active)
 
     return rx.link(
         rx.hstack(
@@ -118,10 +120,11 @@ def sidebar() -> rx.Component:
             rx.vstack(
                 *[
                     sidebar_item(
-                        text=page.get("title", page["route"].strip("/").capitalize()),
-                        url=page["route"],
+                        
+                            text=page.get("title", page["route"].strip("/").capitalize()),
+                            url=page["route"],
                     )
-                    for page in get_decorated_pages()
+                    for page in get_decorated_pages() 
                 ],
                 width="100%",
                 overflow_y="auto",

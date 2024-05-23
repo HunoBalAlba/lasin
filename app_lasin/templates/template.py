@@ -55,7 +55,7 @@ def menu_button() -> rx.Component:
                 ],
                 rx.menu.separator(),
                 menu_item_link("Lasin", "http://informatica.umsa.bo/"),
-                menu_item_link("Cerrar Secion", "/"),
+                menu_item_link("Iniciar Secion", "/login"),
             ),
         ),
         position="fixed",
