@@ -98,7 +98,7 @@ def login()->rx.Component:
                     LoginState.error,
                     rx.callout(
                         "Credenciales incrrectas",
-                        icon="alert_triangle",
+                        icon="triangle_alert",
                         color_scheme="red",
                         role="alert",
                         style={"margin_top": "10px"}
@@ -125,7 +125,7 @@ def field_form_component(label:str,placeholder:str,name_var:str,
         rx.flex(
             rx.form.label(label),
             rx.form.control(
-                rx.input.input(
+                rx.input.input(  #rx.input.input(
                     placeholder=placeholder,
                     on_change=on_change_function,
                     name=name_var,
