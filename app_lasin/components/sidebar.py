@@ -14,10 +14,11 @@ def sidebar_header() -> rx.Component:
     return rx.hstack(
         # The logo.
         rx.color_mode_cond(
-            rx.image(src="/logo_i.png", height="2em"),
-            rx.image(src="/logo_i.png", height="2em"),
+            rx.image(src="/logo_i.png", height="10em"),
+            rx.image(src="/logo_i.png", height="10em"),
         ),
         rx.spacer(),
+        #rx.text("Laboratorio\nsuperior\nde\nInformática"),
         rx.link(
             rx.button(
                 #rx.icon("messages-square"),
@@ -31,7 +32,7 @@ def sidebar_header() -> rx.Component:
         width="100%",
         border_bottom=styles.border,
         padding_x="1em",
-        padding_y="2em",
+        padding_y="0.1em", ##padding_y="2em",
     )
 
 
