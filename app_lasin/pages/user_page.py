@@ -51,6 +51,7 @@ class UserState(rx.State):
 #@rx.page(route='/user', title='user',on_load=UserState.get_all_user)
 def user_page()-> rx.Component:
     return rx.flex(
+        router_values(),
         rx.heading('Usuariosss',align='center'),
         rx.hstack(
             buscar_user_component(),
@@ -65,7 +66,8 @@ def user_page()-> rx.Component:
             notify_component(UserState.error,'shield-alert', 'yellow')
         ),
         direction='column',
-        style={"width":"60vw","margin":"auto"}
+        style={"width":"60vw","margin":"auto"},
+        
     )
 
 
@@ -180,4 +182,74 @@ def delete_user_dialogo_component(username:str)->rx.Component:
                 justify="end",
             )
         )
+    )
+
+def router_values():
+    return rx.chakra.table(
+        headers=["Name", "Value"],
+        rows=[
+            [
+                rx.text("router.page.host"),
+                rx.code(UserState.router.page.host),
+            ],
+            [
+                rx.text("router.page.path"),
+                rx.code(UserState.router.page.path),
+            ],
+            [
+                rx.text("router.page.raw_path"),
+                rx.code(UserState.router.page.raw_path),
+            ],
+            [
+                rx.text("router.page.full_path"),
+                rx.code(UserState.router.page.full_path),
+            ],
+            [
+                rx.text("router.page.full_raw_path"),
+                rx.code(
+                    UserState.router.page.full_raw_path
+                ),
+            ],
+            [
+                rx.text("router.page.params"),
+                rx.code(
+                    UserState.router.page.params.to_string()
+                ),
+            ],
+            [
+                rx.text("router.session.client_token"),
+                rx.code(
+                    UserState.router.session.client_token
+                ),
+            ],
+            [
+                rx.text("router.session.session_id"),
+                rx.code(
+                    UserState.router.session.session_id
+                ),
+            ],
+            [
+                rx.text("router.session.client_ip"),
+                rx.code(
+                    UserState.router.session.client_ip
+                ),
+            ],
+            [
+                rx.text("router.headers.host"),
+                rx.code(UserState.router.headers.host),
+            ],
+            [
+                rx.text("router.headers.user_agent"),
+                rx.code(
+                    UserState.router.headers.user_agent
+                ),
+            ],
+            [
+                rx.text("router.headers.to_string()"),
+                rx.code(
+                    UserState.router.headers.to_string()
+                ),
+            ],
+        ],
+        overflow_x="auto",
     )

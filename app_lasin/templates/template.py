@@ -31,6 +31,17 @@ def menu_item_link(text, href):
         },
     )
 
+class MouseMove(rx.State):
+    text = "L A S I N"
+    #size="lg"
+
+    def change_text(self):
+        if self.text == "Laboratorio\nsuperior\nde\nInformática\n":
+            self.text = "L A S I N"
+        else:
+            self.text = "Laboratorio\nsuperior\nde\nInformática\n"
+
+
 
 def menu_button() -> rx.Component:
     """The menu button on the top right of the page.
@@ -40,29 +51,45 @@ def menu_button() -> rx.Component:
     """
     from reflex.page import get_decorated_pages
 
-    return rx.box(
-        rx.menu.root(
-            rx.menu.trigger(
-                rx.button(
-                    rx.icon("menu"),
-                    variant="soft",
-                )
+    if True:
+        return rx.hstack( 
+            rx.card(
+                rx.link(
+                    rx.flex(
+                        rx.avatar(src="/logo_i.png"),
+                        rx.box(
+                            rx.heading("LASIN"),
+                            rx.text(
+                                "Laboratorio Superior de Informática"
+                            ),
+                        ),
+                        spacing="2",
+                        
+                    ),
+                    #rx.button(
+                   # "Edit Profile",
+                   # color_scheme="indigo",
+                    #variant="solid",
+                #),
+                ),
+                as_child=True,
+                position="fixed",
+                            right="8em",
+                            top="1em",
+                            z_index="100",
             ),
-            rx.menu.content(
-                *[
-                    menu_item_link(page["title"], page["route"])
-                    for page in get_decorated_pages()
-                ],
-                rx.menu.separator(),
-                menu_item_link("Lasin", "http://informatica.umsa.bo/"),
-                menu_item_link("Iniciar Secion", "/login"),
-            ),
-        ),
-        position="fixed",
-        right="2em",
-        top="2em",
-        z_index="500",
+           
+                
+                        #),
+            
+            menu_todos_los_items(),
+        )
+    else:
+        return rx.hstack(
+        cad_avatar(),
+        menu_todos_los_items(),
     )
+
 
 
 class ThemeState(rx.State):
@@ -144,3 +171,100 @@ def template(
         return theme_wrap
 
     return decorator
+
+
+def cad_avatar():
+    return rx.box(           
+            rx.card(
+                rx.link(
+                    rx.flex(
+                    #rx.avatar(src="/logo_i.png"),
+                    rx.menu.root(
+                        rx.menu.trigger(
+                            rx.button(
+                               # rx.box(
+                                    rx.chakra.avatar(
+                                        rx.chakra.avatar_badge(
+                                        box_size="1.25em",
+                                        bg="green.500",
+                                        border_color="green.500",
+                                        ),
+                                    name="Balvoa Albarracin",
+                                    ),
+                        #rx.spacer(),
+                        #),
+                                variant="ghost",
+                            ),
+                        ),
+                        
+                        rx.menu.content(
+                    menu_item_link("Configuracion", "/"),
+                    rx.menu.separator(),
+                    menu_item_link("mis ultimas actividades", "/"),
+                    menu_item_link("Cerrar Secion", "/login"),
+                ),
+                    ),
+                                rx.box(
+                                    rx.heading("Estudiante"),
+                                    rx.text(
+                                        "Hugo Balvoa Albarracin"
+                                    ),
+                                ),
+                                spacing="2",
+                    ),
+                ),
+                        as_child=True,
+                        position="fixed",
+                            right="8em",
+                            top="1em",
+                            z_index="100",
+                        ),
+                   
+            #),
+            
+           
+            #position="relative",
+
+            #rx.text("Laboratorio\nsuperior\nde\nInformática\n",font_size="1em"),
+                #rx.spacer(),
+            position="fixed",
+            right="10em",
+            top="0.2em",
+            z_index="100",
+        ),
+
+
+
+
+def menu_todos_los_items():
+    from reflex.page import get_decorated_pages
+
+    return rx.box(
+            rx.menu.root(
+                rx.menu.trigger(
+                    rx.button(
+                        rx.icon("menu"),
+                        variant="soft",
+                    )
+                ),
+                
+                #rx.menu.separator(),
+                rx.menu.content(
+                    *[
+                        menu_item_link(page["title"], page["route"])
+                        for page in get_decorated_pages()
+                    ],
+                    rx.menu.separator(),
+                    #enlaces_contacto(),
+                    menu_item_link("Iniciar Sesion", "/login"),
+                    menu_item_link("Redes Sociales", "/redes_sociales"),
+                ),
+            ),
+            position="fixed",
+            right="2em",
+            top="2em",
+            z_index="500",
+        
+
+    )
+
