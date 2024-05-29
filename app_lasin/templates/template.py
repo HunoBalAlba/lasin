@@ -6,6 +6,9 @@ from app_lasin import styles
 from app_lasin.components.sidebar import sidebar
 from typing import Callable
 
+#from app_lasin.pages.login import  LoginState
+from app_lasin.pages.LoginState import LoginState
+
 import reflex as rx
 
 # Meta tags for the app.
@@ -51,44 +54,55 @@ def menu_button() -> rx.Component:
     """
     from reflex.page import get_decorated_pages
 
-    if True:
-        return rx.hstack( 
-            rx.card(
-                rx.link(
-                    rx.flex(
-                        rx.avatar(src="/logo_i.png"),
-                        rx.box(
-                            rx.heading("LASIN"),
-                            rx.text(
-                                "Laboratorio Superior de Informática"
+    return rx.vstack(
+        rx.cond(
+            ~LoginState.getEstado,
+            rx.hstack( 
+                rx.card(
+                    rx.link(
+                        rx.flex(
+                            rx.avatar(src="/logo_i.png"),
+                            rx.box(
+                                rx.heading(f"LASIN {LoginState.estado}"),
+                                rx.text(
+                                    f"{LoginState.estado}Laboratorio Superior de Informática"
+                                ),
                             ),
+                            spacing="2",
+                            
                         ),
-                        spacing="2",
-                        
+                        #rx.button(
+                    # "Edit Profile",
+                    # color_scheme="indigo",
+                        #variant="solid",
+                    #),
                     ),
-                    #rx.button(
-                   # "Edit Profile",
-                   # color_scheme="indigo",
-                    #variant="solid",
-                #),
+                    as_child=True,
+                    position="fixed",
+                                right="8em",
+                                top="1em",
+                                z_index="100",
                 ),
-                as_child=True,
-                position="fixed",
-                            right="8em",
-                            top="1em",
-                            z_index="100",
-            ),
-           
-                
-                        #),
             
-            menu_todos_los_items(),
-        )
-    else:
-        return rx.hstack(
-        cad_avatar(),
-        menu_todos_los_items(),
+                    
+                            #),
+                
+                menu_todos_los_items(),
+            ),
+        ),
+        rx.cond(
+            LoginState.getEstado,
+                rx.hstack(
+                    cad_avatar(),
+                    menu_todos_los_items(),
+                ),
+                
+            #LoginState.getEstado & ~LoginState.getError,
+            
+                #
+        ),
     )
+        
 
 
 
@@ -179,6 +193,7 @@ def cad_avatar():
                 rx.link(
                     rx.flex(
                     #rx.avatar(src="/logo_i.png"),
+                    
                     rx.menu.root(
                         rx.menu.trigger(
                             rx.button(
@@ -189,7 +204,8 @@ def cad_avatar():
                                         bg="green.500",
                                         border_color="green.500",
                                         ),
-                                    name="Balvoa Albarracin",
+                                    name=f"{LoginState.getName}",
+                                    #name="hugo balvoa",
                                     ),
                         #rx.spacer(),
                         #),
@@ -201,13 +217,15 @@ def cad_avatar():
                     menu_item_link("Configuracion", "/"),
                     rx.menu.separator(),
                     menu_item_link("mis ultimas actividades", "/"),
-                    menu_item_link("Cerrar Secion", "/login"),
+                    #menu_item_link("Cerrar Secion", "/login"),
+                    dialogo_cerar_sesion(),
                 ),
                     ),
                                 rx.box(
-                                    rx.heading("Estudiante"),
+                                    rx.heading(f"{LoginState.getTipoUsuario} - {LoginState.getName}"),
                                     rx.text(
-                                        "Hugo Balvoa Albarracin"
+                                        f"{LoginState.getEmail}"
+                                        #"bal02albagmail.com"
                                     ),
                                 ),
                                 spacing="2",
@@ -256,7 +274,18 @@ def menu_todos_los_items():
                     ],
                     rx.menu.separator(),
                     #enlaces_contacto(),
-                    menu_item_link("Iniciar Sesion", "/login"),
+                    #menu_item_link("Iniciar Sesion", "/login"),
+                    #dialogo_cerar_sesion(),
+                    rx.cond(~LoginState.estado,
+                        rx.chakra.link(
+                            rx.chakra.button("Iniciar Sesion"),
+                            href="/login",
+                            variant="soft",
+                            color="rgb(107,99,246)",
+                            button=False,
+                        ),
+                    ),
+                    
                     menu_item_link("Redes Sociales", "/redes_sociales"),
                 ),
             ),
@@ -268,3 +297,33 @@ def menu_todos_los_items():
 
     )
 
+def dialogo_cerar_sesion():
+    return rx.dialog.root(
+            rx.dialog.trigger(rx.button("Serrar Sesión", size="2")),
+            #rx.dialog.trigger(rx.button("Serrar Sesión", size="2")),
+                        rx.dialog.content(
+                            rx.dialog.title("Esta seguro de salir de su cuenta?"),
+                            rx.dialog.description(
+                                "Guarde los Cambios de su trabajo antes de salir",
+                                size="2",
+                                margin_bottom="16px",
+                            ),
+                            
+                            rx.flex(
+                                rx.dialog.close(
+                                    rx.button(
+                                        "Cancel",
+                                        color_scheme="gray",
+                                        variant="ghost",
+                                    ),
+                                ),
+                                rx.dialog.close(
+                                    rx.button("Abandonar",on_click=LoginState.cerrar_sesion_dd),
+                                ),
+                                spacing="3",
+                                margin_top="16px",
+                                justify="end",
+                            ),
+                        ),
+        ),
+       

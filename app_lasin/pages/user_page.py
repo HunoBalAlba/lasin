@@ -51,7 +51,7 @@ class UserState(rx.State):
 #@rx.page(route='/user', title='user',on_load=UserState.get_all_user)
 def user_page()-> rx.Component:
     return rx.flex(
-        router_values(),
+        # datos de la pagina web  router_values(),
         rx.heading('Usuariosss',align='center'),
         rx.hstack(
             buscar_user_component(),
@@ -184,6 +184,10 @@ def delete_user_dialogo_component(username:str)->rx.Component:
         )
     )
 
+
+
+'''
+
 def router_values():
     return rx.chakra.table(
         headers=["Name", "Value"],
@@ -253,3 +257,4 @@ def router_values():
         ],
         overflow_x="auto",
     )
+'''

@@ -14,8 +14,8 @@ def sidebar_header() -> rx.Component:
     return rx.hstack(
         # The logo.
         rx.color_mode_cond(
-            rx.image(src="/logo_i.png", height="10em"),
-            rx.image(src="/logo_i.png", height="10em"),
+            rx.image(src="/logo_i.png", height="9em"),
+            rx.image(src="/logo_i.png", height="9em"),
         ),
         rx.spacer(),
         #rx.text("Laboratorio\nsuperior\nde\nInformática"),

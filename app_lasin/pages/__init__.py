@@ -1,4 +1,4 @@
-from .reportes import reportes
+#from .reportes import reportes
 from .index import index
 from .ins import ins
 from .cert import cert
@@ -11,4 +11,16 @@ if False:
     print("usted no es un usuario")
 else:
     from .usuarios import usuarios
+
+##from .cerrrar_sesion import cerrar
+
 from .login import login
+
+#from app_lasin.pages.LoginState import LoginState
+
+#def cerrarSesion():
+#if ~LoginState.getEstado :
+    #from .login import login
+    
+        
+        
