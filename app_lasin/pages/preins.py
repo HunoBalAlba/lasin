@@ -9,8 +9,8 @@ import reflex as rx
 from app_lasin.pages.LoginState import LoginState
 
 
-@template(route="/ins", title="Inscripciones")
-def ins() -> rx.Component:
+@template(route="/preins", title="Pre-Inscripciones")
+def preins() -> rx.Component:
     """The dashboard page.
 
     Returns:
@@ -18,12 +18,12 @@ def ins() -> rx.Component:
     """
     return rx.vstack(
         rx.cond(
-            LoginState.is_Administrador,
+            LoginState.is_estudent,
                 rx.vstack(
-                    rx.heading("Inscripciones", size="8"),
-                    rx.text("Inscripcion"),
+                    rx.heading("Pre - Inscripciones", size="8"),
+                    rx.text("Reservar Cupo"),
                     rx.text(
-                        "En esta pagina encontrara incripciones docentes y estudiantes ",
+                        "En esta pagina podras hacer una recerva de Cursos",
                         #rx.code("{your_app}/pages/ins.py"),
                         #mostrar_tabla_personas(),
 
@@ -36,7 +36,7 @@ def ins() -> rx.Component:
             ),
         ),
         rx.cond(
-            ~LoginState.is_Administrador,
+            ~LoginState.is_estudent,
             rx.hstack(
                 rx.heading("\n\n404", size="8"),
                 rx.text("   "),

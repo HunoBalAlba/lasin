@@ -1,30 +1,54 @@
 from app_lasin.templates import template
 from .user_page import user_page,UserState
+from .person_page import PersonState,persona_page
 
 import reflex as rx
+from app_lasin.pages.LoginState import LoginState
 
 
-
-@template(route="/usuarios", title="usuarios",on_load=UserState.get_all_user)
-def usuarios() -> rx.Component:
+@template(route="/g_usuarios", title="Gestion de usuarios",on_load=PersonState.get_all_person)
+def g_usuarios() -> rx.Component:
     """The dashboard page.
 
     Returns:
         The UI for the dashboard page.
     """
     return rx.vstack(
-        rx.heading("Seccion de Usuarios", size="8"),
-        rx.text("Usuarios..."),
-        rx.text(
-            "En esta pagina encontrara la administracion de los usuarios",
-            #rx.code("{your_app}/pages/ins.py"),
-            #mostrar_tabla_personas(),
+        rx.cond(
+            LoginState.is_Administrador,
+            rx.vstack(
+                rx.heading("Seccion de Usuarios", size="8"),
+                rx.text("Usuarios..."),
+                rx.text(
+                    "En esta pagina encontrara la administracion de los usuarios",
+                    #rx.code("{your_app}/pages/ins.py"),
+                    #mostrar_tabla_personas(),
 
-          #rx.code(),
-          #rx.code("app_lasin/pages/user_page.py"),
-        
+                #rx.code(),
+                #rx.code("app_lasin/pages/user_page.py"),
+                
+                ),
+                #user_page()
+                persona_page()
+            ),
+                
+            
         ),
-        user_page()
+        rx.cond(
+            ~LoginState.is_Administrador,
+            rx.hstack(
+                rx.heading("\n\n404", size="8"),
+                rx.text("   "),
+                rx.text(
+                    "No se ha encontrado la pagina",
+                ),
+                #align="center",
+                position= "absolute",
+                top= "50%",
+                left= "50%",
+            ),
+            
+        ),
         #router_values(),
     )
 #class RouterState(rx.State):

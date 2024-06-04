@@ -23,7 +23,16 @@ async def root():
 
 #@rx.page(route="/login",title="login")
 #@template(route="/cert", title="Certificados")
-@template(route="/login",title="login")
+#ruta:str="login"
+#i#f LoginState.estado:
+  #  ruta="Ver Sesion"
+#else:
+    #~LoginState.estado,
+ #   ruta="login"
+
+    
+   
+@template(route="/login",title="Inicio de sesion")
 def login()->rx.Component:
     return rx.vstack(
         rx.cond( ~LoginState.estado,         
@@ -81,75 +90,11 @@ def login()->rx.Component:
                 #style=style_section,
                 justify="center",
                 width="100%",
-                
-            #)
+
             )
         ),
-        rx.cond( LoginState.estado,  
-                
-                rx.vstack(
-                    
-                    rx.dialog.root(
-                        rx.dialog.trigger(rx.button("Revisar Mi Cuenta", size="4")),
-                        rx.dialog.content(
-                            rx.dialog.title("Guardar Cambios"),
-                            rx.dialog.description(
-                                "Change your profile details and preferences.",
-                                size="2",
-                                margin_bottom="16px",
-                            ),
-                            rx.flex(
-                                rx.text(
-                                    "Name",
-                                    as_="div",
-                                    size="2",
-                                    margin_bottom="4px",
-                                    weight="bold",
-                                ),
-                                rx.input(
-                                    default_value=f"{LoginState.name}",
-                                    placeholder="Enter your name",
-                                ),
-                                rx.text(
-                                    "Email",
-                                    as_="div",
-                                    size="2",
-                                    margin_bottom="4px",
-                                    weight="bold",
-                                ),
-                                rx.input(
-                                    default_value=f"{LoginState.email}",
-                                    placeholder="Enter your email",
-                                ),
-                                direction="column",
-                                spacing="3",
-                            ),
-                            rx.flex(
-                                rx.dialog.close(
-                                    rx.button(
-                                        "Cancel",
-                                        color_scheme="gray",
-                                        variant="soft",
-                                    ),
-                                ),
-                                rx.dialog.close(
-                                    rx.button("Abandonar",on_click=LoginState.cerrar_sesion_dd),
-                                ),
-                                spacing="3",
-                                margin_top="16px",
-                                justify="end",
-                            ),
-                        ),
-                    ),
-                    #cerrar_sesion_user_dialogo_component(),
-                    rx.text("soy un fantasma"),
-                ),
-                
-        ),
         justify="center",
-                width="100%",
-                
-    #)
+        width="100%",
     )
 
 

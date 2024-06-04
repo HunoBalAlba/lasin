@@ -14,8 +14,8 @@ def sidebar_header() -> rx.Component:
     return rx.hstack(
         # The logo.
         rx.color_mode_cond(
-            rx.image(src="/logo_i.png", height="9em"),
-            rx.image(src="/logo_i.png", height="9em"),
+            rx.image(src="/logo_i.png", height="8em"),
+            rx.image(src="/logo_i.png", height="8em"),
         ),
         rx.spacer(),
         #rx.text("Laboratorio\nsuperior\nde\nInformática"),
@@ -59,8 +59,44 @@ def sidebar_footer() -> rx.Component:
         padding="1em",
     )
 
+from app_lasin.pages.LoginState import LoginState
+
+import app_lasin.pages.restriccion as res
 
 def sidebar_item(text: str, url: str) -> rx.Component:
+     return excluir_paginas_segun_rol_sidebar(text, url)
+    #return menu_item_enlace(text, href)
+
+def excluir_paginas_segun_rol_sidebar(text, href):
+    
+    #print(f"pagina:  {text}   enlace: {href}")
+    return rx.vstack(
+        rx.cond(
+            href in res.lista_enlace_estudiante and LoginState.getTipoUsuario=="e",
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_modificado_sidebar_item(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_Administrador and LoginState.getTipoUsuario=="a",
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_modificado_sidebar_item(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_docente and LoginState.getTipoUsuario=="d",
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_modificado_sidebar_item(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_publico and LoginState.getTipoUsuario=="p",
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_modificado_sidebar_item(text, href),
+        ),
+        
+        width="100%",
+
+    )
+
+def menu_modificado_sidebar_item(text: str, url: str) -> rx.Component:
     """Sidebar item.
 
     Args:
@@ -103,8 +139,7 @@ def sidebar_item(text: str, url: str) -> rx.Component:
         ),
         href=url,
         width="100%",
-    )
-
+    ) 
 
 def sidebar() -> rx.Component:
     """The sidebar.

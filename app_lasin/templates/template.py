@@ -9,6 +9,7 @@ from typing import Callable
 #from app_lasin.pages.login import  LoginState
 from app_lasin.pages.LoginState import LoginState
 
+
 import reflex as rx
 
 # Meta tags for the app.
@@ -19,12 +20,52 @@ default_meta = [
     },
 ]
 
+import app_lasin.pages.restriccion as res
 
 def menu_item_link(text, href):
+    
+
+    return rx.box(
+        excluir_paginas_segun_rol(text, href),
+        width="100%",
+    ),
+    #return menu_item_enlace(text, href)
+
+def excluir_paginas_segun_rol(text, href):
+    
+    #print(f"pagina:  {text}   enlace: {href}")
+    return rx.box(
+            rx.cond(
+            href in res.lista_enlace_estudiante and LoginState.getTipoUsuario=='e',
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_item_enlace(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_Administrador and LoginState.getTipoUsuario=='a',
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_item_enlace(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_docente and LoginState.getTipoUsuario=='d',
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_item_enlace(text, href),
+        ),
+        rx.cond(
+            href in res.lista_enlace_publico and LoginState.getTipoUsuario=='p',
+            #print(f"pagina:  {text}   enlace: {href}"),
+            menu_item_enlace(text, href),
+        ),
+        
+
+    )
+
+
+def menu_item_enlace(text, href):
     return rx.menu.item(
         rx.link(
             text,
             href=href,
+            
             width="100%",
             color="inherit",
         ),
@@ -32,6 +73,7 @@ def menu_item_link(text, href):
             "color": styles.accent_color,
             "background_color": styles.accent_text_color,
         },
+        
     )
 
 class MouseMove(rx.State):
@@ -47,6 +89,8 @@ class MouseMove(rx.State):
 
 
 def menu_button() -> rx.Component:
+
+    
     """The menu button on the top right of the page.
 
     Returns:
@@ -59,28 +103,29 @@ def menu_button() -> rx.Component:
             ~LoginState.getEstado,
             rx.hstack( 
                 rx.card(
-                    rx.link(
+                    #rx.link(
                         rx.flex(
-                            rx.avatar(src="/logo_i.png"),
-                            rx.box(
-                                rx.heading(f"LASIN {LoginState.estado}"),
-                                rx.text(
-                                    f"{LoginState.estado}Laboratorio Superior de Informática"
+                            rx.hstack(
+                                rx.avatar(src="/logo_i.png",size="5"),
+                                rx.box(
+                                    rx.text("L A S I N", weight="bold", size="4",as_="div"),
+                                    rx.text("Laboratorio Superior de Informática",size="1"),
+                                    #rx.heading("L A S I N"),
+                                    #rx.text( "Laboratorio Superior de Informática"),
                                 ),
-                            ),
-                            spacing="2",
-                            
+                                spacing="1",
+                            )
                         ),
                         #rx.button(
                     # "Edit Profile",
                     # color_scheme="indigo",
                         #variant="solid",
                     #),
-                    ),
+                    #),
                     as_child=True,
                     position="fixed",
-                                right="8em",
-                                top="1em",
+                                right="5.2em",
+                                top="0.2em",
                                 z_index="100",
                 ),
             
@@ -93,7 +138,8 @@ def menu_button() -> rx.Component:
         rx.cond(
             LoginState.getEstado,
                 rx.hstack(
-                    cad_avatar(),
+                    #cad_avatar(),
+                    opciones_menu_usuario_avatar(),
                     menu_todos_los_items(),
                 ),
                 
@@ -186,70 +232,19 @@ def template(
 
     return decorator
 
-
-def cad_avatar():
-    return rx.box(           
-            rx.card(
-                rx.link(
-                    rx.flex(
-                    #rx.avatar(src="/logo_i.png"),
-                    
-                    rx.menu.root(
-                        rx.menu.trigger(
-                            rx.button(
-                               # rx.box(
-                                    rx.chakra.avatar(
-                                        rx.chakra.avatar_badge(
-                                        box_size="1.25em",
-                                        bg="green.500",
-                                        border_color="green.500",
-                                        ),
-                                    name=f"{LoginState.getName}",
-                                    #name="hugo balvoa",
-                                    ),
-                        #rx.spacer(),
-                        #),
-                                variant="ghost",
-                            ),
-                        ),
-                        
-                        rx.menu.content(
-                    menu_item_link("Configuracion", "/"),
-                    rx.menu.separator(),
-                    menu_item_link("mis ultimas actividades", "/"),
-                    #menu_item_link("Cerrar Secion", "/login"),
-                    dialogo_cerar_sesion(),
-                ),
-                    ),
-                                rx.box(
-                                    rx.heading(f"{LoginState.getTipoUsuario} - {LoginState.getName}"),
-                                    rx.text(
-                                        f"{LoginState.getEmail}"
-                                        #"bal02albagmail.com"
-                                    ),
-                                ),
-                                spacing="2",
-                    ),
-                ),
-                        as_child=True,
-                        position="fixed",
-                            right="8em",
-                            top="1em",
-                            z_index="100",
-                        ),
-                   
-            #),
-            
-           
-            #position="relative",
-
-            #rx.text("Laboratorio\nsuperior\nde\nInformática\n",font_size="1em"),
-                #rx.spacer(),
-            position="fixed",
-            right="10em",
-            top="0.2em",
-            z_index="100",
-        ),
+def colocar_avatar_editar_perfil():
+    return rx.flex(
+    rx.avatar(src="/logo.jpg", fallback="RU", size="9"),
+    rx.text("Reflex User", weight="bold", size="4"),
+    rx.text("@reflexuser", color_scheme="gray"),
+    rx.button(
+        "Edit Profile",
+        color_scheme="indigo",
+        variant="solid",
+    ),
+    direction="column",
+    spacing="1",
+)
 
 
 
@@ -268,62 +263,135 @@ def menu_todos_los_items():
                 
                 #rx.menu.separator(),
                 rx.menu.content(
+                    
                     *[
                         menu_item_link(page["title"], page["route"])
                         for page in get_decorated_pages()
                     ],
-                    rx.menu.separator(),
-                    #enlaces_contacto(),
-                    #menu_item_link("Iniciar Sesion", "/login"),
-                    #dialogo_cerar_sesion(),
-                    rx.cond(~LoginState.estado,
-                        rx.chakra.link(
-                            rx.chakra.button("Iniciar Sesion"),
-                            href="/login",
-                            variant="soft",
-                            color="rgb(107,99,246)",
-                            button=False,
-                        ),
-                    ),
+                    #rx.menu.separator(),
+                    #rx.link(rx.button("Redes Sociales"),color_scheme="mint", href="/redes_sociales") ,                   
                     
-                    menu_item_link("Redes Sociales", "/redes_sociales"),
+                    rx.menu.separator(),
+                    
+                    cerrar_sesion_cuadro_dialogo(),
+                    
                 ),
             ),
+            #position="fixed",
             position="fixed",
+            
             right="2em",
             top="2em",
-            z_index="500",
+            z_index="998",
         
 
     )
 
-def dialogo_cerar_sesion():
-    return rx.dialog.root(
-            rx.dialog.trigger(rx.button("Serrar Sesión", size="2")),
-            #rx.dialog.trigger(rx.button("Serrar Sesión", size="2")),
-                        rx.dialog.content(
-                            rx.dialog.title("Esta seguro de salir de su cuenta?"),
-                            rx.dialog.description(
-                                "Guarde los Cambios de su trabajo antes de salir",
-                                size="2",
-                                margin_bottom="16px",
-                            ),
-                            
-                            rx.flex(
-                                rx.dialog.close(
-                                    rx.button(
-                                        "Cancel",
-                                        color_scheme="gray",
-                                        variant="ghost",
-                                    ),
-                                ),
-                                rx.dialog.close(
-                                    rx.button("Abandonar",on_click=LoginState.cerrar_sesion_dd),
-                                ),
-                                spacing="3",
-                                margin_top="16px",
-                                justify="end",
+
+       
+
+def cerrar_sesion_cuadro_dialogo():
+    return rx.vstack(
+        #rx.menu.separator(),
+        rx.cond(LoginState.estado,
+            rx.dialog.root(
+                rx.dialog.trigger(rx.button("Cerrar Sesión", size="2")),
+                rx.dialog.content(
+                    rx.dialog.title("Cerrar Sesión"),
+                    rx.dialog.description(
+                        "Guarde los Cambios de su trabajo antes de salir",
+                        size="2",
+                        margin_bottom="16px",
+                    ),
+                    
+                    rx.flex(
+                        rx.dialog.close(
+                            rx.button(
+                                "Cancelar",
+                                color_scheme="gray",
+                                variant="soft",
                             ),
                         ),
+                        rx.dialog.close(
+                            rx.button("Abandonar",on_click=LoginState.cerrar_sesion_dd),
+                        ),
+                        spacing="3",
+                        margin_top="16px",
+                        justify="end",
+                    ),
+                ),
+            )
         ),
-       
+        rx.cond(~LoginState.estado,
+            rx.link(rx.button("Iniciar Sesión"), href="/login") ,    
+            
+        )
+    )
+
+    
+
+
+
+def opciones_menu_usuario_avatar():
+    return rx.box(           
+            rx.card(
+                rx.flex(
+                    rx.hstack(
+                        rx.vstack(
+                            rx.chakra.avatar(
+                                rx.chakra.avatar_badge(
+                                    box_size="1.25em",
+                                    bg="green.500",
+                                    border_color="green.500",
+                                    
+                                ),
+                                name=f"{LoginState.getName}",
+                                size="lg",
+                            ),
+                           
+                        ),
+                        
+                        rx.vstack(
+                            #rx.vstack(
+                                #rx.text(f"{LoginState.obtener_tipo_usuario}"),
+                                rx.text(f"{LoginState.getName}", weight="bold", size="2"),
+                                rx.text(f"{LoginState.getEmail}", color_scheme="gray",size="1"),
+                            #),
+                            rx.hstack(
+                                #rx.text(f"{LoginState.getEmail}", color_scheme="gray",size="1"),
+                                rx.text(f"{LoginState.obtener_tipo_usuario}",size="2"),
+                                rx.menu.root(
+                                    rx.menu.trigger(
+                                        rx.button(
+                                            "Opciones", variant="soft", size="1"
+                                        ),
+                                    ),
+                                    rx.menu.content(
+                                        rx.menu.item("Editar Perfil"),
+                                        rx.menu.item("Subir foto de perfil"),
+                                        rx.menu.separator(),
+                                        rx.menu.item("Cambiar Contraseña"),
+                                        rx.menu.separator(),
+                                        rx.menu.item(
+                                            "Hoja de vida", color="red"
+                                        ),
+                                        rx.menu.separator(),
+                                        cerrar_sesion_cuadro_dialogo(),
+                                    ),
+                                    #on_open_change=DropdownMenuState.count_opens,
+                                ),
+                            ),
+                            #rx.text(f"{LoginState.getTipo_usuario_cadena}"),
+                            direction="column",
+                            spacing="1",                            
+                        ),
+                            
+                    ),
+                    
+                ),
+            ),
+            position="fixed",
+            right="5.2em",
+            top="0.2em",
+            z_index="100",
+    )

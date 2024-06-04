@@ -26,12 +26,40 @@ class LoginState(rx.State):
     username:str="example@mail.com"
     password:str
     name:str
-    tipo_usuario:str="Administrador"
+    tipo_usuario:str='p'
     email:str
     error=False
     #usuario:User
-    estado:bool=False
+    estado:bool=False #si se ha inicado como usuario de la app web
+    ruta_perfil:str="Iniciar Secion"
+    #dict_tipo_usuario:dict={'e':'Estudiante','a':'Administrador','d':'Docente','p':'Público'}
+    dict_tipo_usuario={'e':'Estudiante','a':'Administrador','d':'Docente','p':'Público'}
+    #dict_tipo_usuario= {'e': 1, 'a': 2, 'd': 3, 'p': 4}
+    #tipo_usuario_cadena:str
+    
 
+    @rx.var
+    def is_estudent(self):
+        return self.tipo_usuario=='e'
+    @rx.var
+    def is_Docente(self):
+        return self.tipo_usuario=='d'
+    @rx.var
+    def is_Administrador(self):
+        return self.tipo_usuario=='a'
+    @rx.var
+    def is_public(self):
+        return self.tipo_usuario=='p'
+    
+
+
+    @rx.var
+    def obtener_tipo_usuario(self):
+        return self.dict_tipo_usuario.get(self.getTipoUsuario)
+    
+    @rx.var
+    def getRutaPerfil(self):
+        return self.ruta_perfil
     @rx.var
     def getEmail(self):
         return self.email
@@ -59,6 +87,7 @@ class LoginState(rx.State):
         async with self:
             self.loader=True
             self.error=False
+            self.ruta_perfil="Iniciar Secion"
             #response=rq.post('http://localhost:8080/auth/login',json=data,headers={"Content-Type":"applicacion/json"})
             #response=rq.post('http://localhost:8000/',json=data,headers={"Content-Type":"aplicacion/json"})
             #if response.status_code==200:
@@ -69,20 +98,30 @@ class LoginState(rx.State):
                     usuario:User=user
                     self.name=usuario.name
                     self.email=usuario.username
-                    print(self.getName)
-                    print(self.getEmail)
+                    #print(self.getName)
+                    #print(self.getEmail)
                     #self.estado=True
                     if user.password==self.password:
                         self.estado=True
-                        print(self.loader,"   loader")
+                        self.ruta_perfil="Mi perfil"
+                        #print(self.loader,"   loader")
                         self.loader=False
-                        print(self.loader," loader")
+                        #dict_tipo_u={'Estudiante':'e','Administrador':'a','Docente':'d','Público':'p'}
+                        #self.tipo_usuario=obtener_tipo_uusuario(usuario.tipo_u)
+                        self.tipo_usuario='a'
+                        print(usuario.tipo_u)
+                        print(self.tipo_usuario)
+                        #self.tipo_usuario_cadena="Administrador"
+                        #print(self.tipo_usuario_cadena,"   ***   es el tipo de usuario cadena")
+                        #print("oooooooooooooooooo    ",self.dict_tipo_usuario.get(self.getTipoUsuario))
+                        #print(self.loader," loader")
                         return rx.redirect("/")
                     else:
                         print("..no coinciden las contraseñas ",self.username, "   verifique los paswword")
                         self.loader=False
                         self.error=True
                         self.estado=False
+                        ruta_perfil:str="Iniciar Secion"
                     #self.loader=False
                     #return rx.redirect("/login")
                     
@@ -106,6 +145,9 @@ class LoginState(rx.State):
                 self.loader=False
                 self.error=True
                 self.estado=False
+                self.tipo_usuario='p'
+                
+                ruta_perfil:str="Iniciar Secion"
     @rx.var
     def user_invalid(self)->bool:
         return not (re.match(r"[^@]+@[^@]+.[^@]+",self.username)and "example@mail.com")
@@ -128,7 +170,22 @@ class LoginState(rx.State):
     #@rx.var
     def cerrar_sesion_dd(self):
         self.estado=False
+        self.ruta_perfil="Iniciar Secion"
+        self.tipo_usuario='p'
+
+        return rx.redirect("/")
+    
+
+        
 #@rx.page(route="/login",title="login")
 #@template(route="/cert", title="Certificados")
 
 #select_user_by_email_service
+
+def obtener_tipo_uusuario(tipo:str):
+        #dict_tipo_usuario={'e':'Estudiante','a':'Administrador','d':'Docente','p':'Público'}
+        
+        dict_tipo_u={'Estudiante':'e','Administrador':'a','Docente':'d','Público':'p'}
+        if len(tipo)!=1:
+            return dict_tipo_u.get(tipo)
+        return tipo

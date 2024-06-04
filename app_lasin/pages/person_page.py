@@ -1,29 +1,39 @@
 
 import reflex as rx
-from ..modelo.user_model import User
-from ..servicio.user_service import select_all_user_service,select_user_by_email_service,create_user_service,delete_user_service
+from ..modelo.person_model import Persona
+from ..servicio.person_service import select_all_person_service,select_person_by_ci_service,create_person_service,delete_person_service
 
 from .notify import notify_component
 import asyncio
 
-class UserState(rx.State):
-    users:list[User]
-    user_buscar:str
+class PersonState(rx.State):
+    personas:list[Persona]
+    persona_buscar:str
     error:str=''
 
-    @rx.background
-    async def get_all_user(self):
-        async with self:
-            #print("***********************         user page             **************")
-            self.users=select_all_user_service()
+    dict_a:dict={'Enero':'01','Febrero':'02','Marzo':'03','Abril':'04','Mayo':'05','Junio':'06','Julio':'07','Agosto':'08','Septiembre':'09','Octubre':'10','Noviembre':'11','Diciembre':'12'}
+
+    
+    def obtener_lista_meses(self):
+        return self.dict_a.keys()
+    
+    def obt_nro_mes(self,mes:str):
+        return self.dict_a.get(mes)
+    
     
     @rx.background
-    async def get_user_by_email(self):
+    async def get_all_person(self):
         async with self:
-            self.users=select_user_by_email_service(self.user_buscar)
+            #print("***********************         user page             **************")
+            self.personas=select_all_person_service()
+    
+    @rx.background
+    async def get_person_by_ci(self):
+        async with self:
+            self.personas=select_person_by_ci_service(self.persona_buscar)
 
     def buscar_on_change(self,value:str):
-        self.user_buscar=value
+        self.persona_buscar=value
 
     
     async def handlenotify(self):
@@ -32,39 +42,46 @@ class UserState(rx.State):
             self.error=''
 
     @rx.background
-    async def create_user(self,data:dict):
+    async def create_person(self,data:dict):
         async with self:
             try:
-                if data['password']==data['password_2']:
-                    self.users=create_user_service(username=data['username'],password=data['password'],phone=data['phone'],name=data['name'],tipo_u=data["tipo_u"])
+                #if data['password']==data['password_2']:
+                fecha_nnn=costruir_fecha_nacimiento(data['fecha_a'],data['fecha_m'],data['fecha_d'])
+                self.personas=create_person_service(ci=data['ci'],nombre=data['nombre'],paterno=data['paterno'],materno=data['materno'],sexo=data['sexo'],fecha_n=fecha_nnn)
             except BaseException as be:
                 print(be.args)
                 self.error=be.args
         await self.handlenotify()
 
     @rx.background
-    async def delete_user_by_email(self,email):
+    async def delete_person_by_ci(self,ci):
         async with self:
-            self.users=delete_user_service(email)
+            self.personas=delete_person_service(ci)
 
-
+   
+def costruir_fecha_nacimiento(anio:str,mes:str,dia:str):
+        dict_a:dict={'Enero':'01','Febrero':'02','Marzo':'03','Abril':'04','Mayo':'05','Junio':'06','Julio':'07','Agosto':'08','Septiembre':'09','Octubre':'10','Noviembre':'11','Diciembre':'12'}
+        mmm=dict_a.get(mes)
+        #print(mmm)
+        #print(anio+'-'+mmm+'-'+dia)
+        return anio+'-'+mmm+'-'+dia
 
 #@rx.page(route='/user', title='user',on_load=UserState.get_all_user)
-def user_page()-> rx.Component:
+def persona_page()-> rx.Component:
     return rx.flex(
         # datos de la pagina web  router_values(),
-        rx.heading('Usuariosss',align='center'),
+        rx.heading('personas',align='center'),
         rx.hstack(
-            buscar_user_component(),
-            create_user_dialogo_component(),
+            buscar_personas_component(),
+            create_persona_dialogo_component(),
             justify='center',
             style={"width":"90vw","margin":"auto"}
         ),
 
-        table_user(UserState.users),
+        table_personas(PersonState.personas),
         rx.cond(
-            UserState.error!='',
-            notify_component(UserState.error,'shield-alert', 'yellow')
+            PersonState.error!='',
+            notify_component(PersonState.error,'shield-alert', 'yellow')
         ),
         direction='column',
         style={"width":"90vw","margin":"auto"},
@@ -72,14 +89,16 @@ def user_page()-> rx.Component:
     )
 
 
-def table_user(list_user: list[User])->rx.Component:
+def table_personas(list_user: list[Persona])->rx.Component:
     return rx.table.root(
         rx.table.header(
             rx.table.row(
+                rx.table.column_header_cell('ci'),
                 rx.table.column_header_cell('nombre'),
-                rx.table.column_header_cell('nombre usuaario'),
-                rx.table.column_header_cell('Telefono'),
-                rx.table.column_header_cell('Tipo de Usuario'),
+                rx.table.column_header_cell('paterno'),
+                rx.table.column_header_cell('pmaterno'),
+                rx.table.column_header_cell('sexo'),
+                rx.table.column_header_cell('fecha Nacimiento'),
                 
                 rx.table.column_header_cell('Accion')
             )
@@ -90,57 +109,61 @@ def table_user(list_user: list[User])->rx.Component:
     )
 
 
-def row_table(user:User):
+def row_table(persona:Persona):
     
     
     return rx.table.row(
-        rx.table.cell(user.name),
-        rx.table.cell(user.username),
-        rx.table.cell(user.phone),
-        rx.table.cell(user.tipo_u),
+        rx.table.cell(persona.ci),
+        rx.table.cell(persona.nombre),
+        rx.table.cell(persona.paterno),
+        rx.table.cell(persona.materno),
+        rx.table.cell(persona.sexo),
+        rx.table.cell(persona.fecha_n),
         rx.table.cell(rx.hstack(
             #rx.button('eliminar')
-            delete_user_dialogo_component(user.username)
+            delete_person_dialogo_component(persona.ci)
             #delete_user_dialogo_component(user.username),
             #rx.button(rx.icon('pencil'))
         ))
     )
 
-def buscar_user_component()->rx.Component:
+def buscar_personas_component()->rx.Component:
     return rx.hstack(
-        rx.input(placeholder='Ingrese Email',on_change=UserState.buscar_on_change),
-        rx.button('Buscar',on_click=UserState.get_user_by_email)
+        rx.input(placeholder='Ingrese Cedula de Identidad',on_change=PersonState.buscar_on_change),
+        rx.button('Buscar',on_click=PersonState.get_person_by_ci)
     )
 
 
 
-def create_user_form() ->rx.Component:
-    #print(" +++++++++++++++++++++++++++++++++++++")
-    #obtener_lista_años()
-    #print(" +++++++++++++++++++++++++++++++++++++")
+def create_person_form() ->rx.Component:
+    
     return rx.form(
         rx.vstack(
             rx.input(
+                placeholder='Cedula de Identidad',
+                name="ci"
+            ),
+            rx.input(
                 placeholder='Nombre',
-                name="name"
+                name="nombre"
             ),
             rx.input(
-                placeholder='Email',
-                name="username"
+                placeholder='Apellido Paterno',
+                name="paterno",
+                #type='password'
             ),
             rx.input(
-                placeholder='Contraseña',
-                name="password",
-                type='password'
+                placeholder='Apellido materno',
+                name="materno",
+                #type='password'
             ),
-            rx.input(
-                placeholder='Confirmar Contraseña',
-                name="password_2",
-                type='password'
-            ),
-            rx.input(
-                placeholder='Telefono',
-                name="phone"
+            rx.vstack(
+                rx.text("Elija el Genero:"),
+                rx.select(
+                    ["Masculino", "Femenino", "sin especificar"],
+                    default_value="Masculino",
+                    name="sexo",
+                ),
             ),
             rx.vstack(
                 rx.text("Elija la fecha de nacimiento:"),
@@ -174,11 +197,12 @@ def create_user_form() ->rx.Component:
                 ),
                 
             ),
+            
             rx.vstack(
                 rx.text("Elija el Tipo de Usuario:"),
                 rx.select(
                     ["Administrador", "Estudiante", "Docente","Persona"],
-                    default_value="Estudiante",
+                    default_value="Persona",
                     name="tipo_u",
                 ),
             ),
@@ -189,19 +213,16 @@ def create_user_form() ->rx.Component:
             ),
 
         ),
-        on_submit=UserState.create_user,
+        on_submit=PersonState.create_person,
     )
 
-def create_user_dialogo_component()->rx.Component:
-    #print(" +++++++*********************************************************")
-    #obtener_lista_años()
-    #print(" +++++++++++++++++++++++++++++++++++++               *************")
+def create_persona_dialogo_component()->rx.Component:
     return rx.dialog.root(
         rx.dialog.trigger(rx.button('Crear')),
         rx.dialog.content(
             rx.flex(
-                rx.dialog.title('Crear usuarioooo'),
-                create_user_form(),
+                rx.dialog.title('Crear Persona'),
+                create_person_form(),
                 justify='center',
                 align='center',
                 direction='column',
@@ -218,12 +239,12 @@ def create_user_dialogo_component()->rx.Component:
         ),
     )
 
-def delete_user_dialogo_component(username:str)->rx.Component:
+def delete_person_dialogo_component(ci:str)->rx.Component:
     return rx.dialog.root(
         rx.dialog.trigger(rx.button(rx.icon('trash-2'))),
         rx.dialog.content(
-            rx.dialog.title('Eliminar Usuario'),
-            rx.dialog.description('está seguro de querer eliminar el usuario'+username),
+            rx.dialog.title('Eliminar Persona'),
+            rx.dialog.description('está seguro de querer eliminar a la persona '+ci),
             rx.flex(
                 rx.dialog.close(
                     rx.button(
@@ -233,7 +254,7 @@ def delete_user_dialogo_component(username:str)->rx.Component:
                     ),
                 ),
                 rx.dialog.close(
-                    rx.button('Confirmar',on_click=UserState.delete_user_by_email(username)),
+                    rx.button('Confirmar',on_click=PersonState.delete_person_by_ci(ci)),
 
                 ),
                 spacing="3",
@@ -243,25 +264,32 @@ def delete_user_dialogo_component(username:str)->rx.Component:
         )
     )
 
-
 def obtener_lista_años():
     lista_a=[]
     for i in range(1960,2020):
-       # print(i)
+        #print(i)
         lista_a.append(str(i))
     return lista_a
 
 def obtener_lista_meses():
+    #mmm=PersonState.obtener_lista_meses()
     lista_a=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+    
+    #print(mmm)
     return lista_a
 
 
 def obtener_lista_dias():
-    lista_a=[]
-    for i in range(1,32):
+    lista=[]
+    for i in range(1,10):
         #print(i)
-        lista_a.append(str(i))
-    return lista_a
+        lista.append('0'+str(i))
+    for i in range(10,32):
+        #print(i)
+        lista.append(str(i))
+    #print(lista)
+    return lista
+
 '''
 
 def router_values():

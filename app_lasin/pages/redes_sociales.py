@@ -7,6 +7,11 @@ import reflex as rx
 
 @template(route="/redes_sociales", title="Redes Sociales")
 def enlaces_contacto() -> rx.Component:
+    #logo_tres_redes_sociales(),
+    
+
+#def logo_tres_redes_sociales():
+    
 #def enlaces_contacto():
 
 #def logo(**props):
@@ -32,7 +37,8 @@ def enlaces_contacto() -> rx.Component:
 
 
 
-    return rx.center(
+    return rx.vstack(
+        rx.center(
         rx.link(
             rx.hstack(
                 #"Cursos",
@@ -90,5 +96,39 @@ def enlaces_contacto() -> rx.Component:
         ),
         #width=props.pop("width", "100%"),
        # **props,
+       
+       
+    ),
+    rx.vstack(
+           botones_redes_sociales(),
+       ),
     )
+    
 
+def botones_redes_sociales():
+    return rx.chakra.button_group(
+        rx.vstack(
+            rx.chakra.button(
+                "White Alpha", color_scheme="whiteAlpha"
+            ),
+            rx.chakra.button(
+                "Black Alpha", color_scheme="blackAlpha"
+            ),
+            rx.chakra.button("Gray", color_scheme="gray"),
+            rx.chakra.button("Red", color_scheme="red"),
+            rx.chakra.button("Orange", color_scheme="orange"),
+            rx.chakra.button("Yellow", color_scheme="yellow"),
+            rx.chakra.button("Green", color_scheme="green"),
+            rx.chakra.button("Teal", color_scheme="teal"),
+            rx.chakra.button("Blue", color_scheme="blue"),
+            rx.chakra.button("Cyan", color_scheme="cyan"),
+            rx.chakra.button("Purple", color_scheme="purple"),
+            rx.chakra.button("Pink", color_scheme="pink"),
+            rx.chakra.button("LinkedIn", color_scheme="linkedin"),
+            rx.chakra.button("Facebook", color_scheme="facebook"),
+            rx.chakra.button("Messenger", color_scheme="messenger"),
+            rx.chakra.button("WhatsApp", color_scheme="whatsapp"),
+            rx.chakra.button("Twitter", color_scheme="twitter"),
+            rx.chakra.button("Telegram", color_scheme="telegram"),
+        ),
+    )
